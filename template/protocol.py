@@ -54,8 +54,8 @@ class Dummy(bt.Synapse):
 
     # Required request input, filled by sending dendrite caller.
     dummy_input: int
-    timeout_seconds: int
-    difficulty: int
+    timeout_seconds: int  # To indicate the expected timeout
+    difficulty: int  # To indicate the level of difficulty
 
 
     # Optional request output, filled by recieving axon.

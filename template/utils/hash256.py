@@ -3,6 +3,7 @@ import hashlib
 def hash256_of_int(number: int) -> str:
     """
     Receives an integer number and returns the corresponding hash for the number.
+    The used algorithm is SHA-256.
     """
     number_str = str(number)
     sha256 = hashlib.sha256()

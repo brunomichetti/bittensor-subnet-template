@@ -61,12 +61,17 @@ class Miner(BaseMinerNeuron):
         The 'forward' function is a placeholder and should be overridden with logic that is appropriate for
         the miner's intended operation. This method demonstrates a basic transformation of input data.
         """
+
+        # Initially the nonce is a random number
         nonce = random.randint(0, 10000)
 
         synapse.dummy_output = nonce
 
         start_time = now = time.time()
 
+        # While the time is not over, combine the nonce and the received data
+        # to find a hash that meets the conditions according the received difficulty.
+        # If success, return the found nonce. If the time ran out, send the nonce encountered so far.
         while ((now - start_time) < synapse.timeout_seconds):
             hashed_number = hash256_of_int(nonce + synapse.dummy_input)
 

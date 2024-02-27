@@ -39,6 +39,8 @@ def reward(query: int, response: int) -> float:
     if response is None:
         return 0
 
+    # The validator checks that the received nonce combined with the sent data (step)
+    # has a hash that meets the defined conditions
     hashed_number = hash256_of_int(query + response)
 
     bt.logging.info(f"Hash: {hashed_number}")

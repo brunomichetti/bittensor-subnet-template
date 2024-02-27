@@ -22,10 +22,10 @@ import bittensor as bt
 from template.protocol import Dummy
 from template.validator.reward import get_rewards
 from template.utils.uids import get_random_uids
-from template.utils.hash256 import hash256_of_int
 
-
-DIFFICULTY = 2
+# The difficulty level. If the difficulty is N, then a correct hash
+# has to start at least with N zeros
+DIFFICULTY = 4
 
 
 async def forward(self):
@@ -45,8 +45,10 @@ async def forward(self):
     responses = await self.dendrite(
         # Send the query to selected miner axons in the network.
         axons=[self.metagraph.axons[uid] for uid in miner_uids],
-        # Construct a dummy query. This simply contains a single integer.
-        synapse=Dummy(dummy_input=self.step, timeout_seconds=15, difficulty=DIFFICULTY),
+        # Construct a dummy query.
+        # For simplification, the data sent is the step.
+        # The validator also sends the timeout time for the miner, and the difficulty level.
+        synapse=Dummy(dummy_input=self.step, timeout_seconds=1, difficulty=DIFFICULTY),
         # All responses have the deserialize function called on them before returning.
         # You are encouraged to define your own deserialization function.
         deserialize=True,
@@ -55,7 +57,6 @@ async def forward(self):
     # Log the results for monitoring purposes.
     bt.logging.info(f"Received responses: {responses}")
 
-    # TODO(developer): Define how the validator scores responses.
     # Adjust the scores based on responses from miners.
     rewards = get_rewards(self, query=self.step, responses=responses)
 
