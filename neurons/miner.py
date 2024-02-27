@@ -20,12 +20,15 @@
 import time
 import typing
 import bittensor as bt
+import random
 
 # Bittensor Miner Template:
 import template
 
 # import base miner class which takes care of most of the boilerplate
 from template.base.miner import BaseMinerNeuron
+from template.utils.hash256 import hash256_of_int, is_correct_hash
+
 
 
 class Miner(BaseMinerNeuron):
@@ -58,8 +61,23 @@ class Miner(BaseMinerNeuron):
         The 'forward' function is a placeholder and should be overridden with logic that is appropriate for
         the miner's intended operation. This method demonstrates a basic transformation of input data.
         """
-        # TODO(developer): Replace with actual implementation logic.
-        synapse.dummy_output = synapse.dummy_input * 2
+        nonce = random.randint(0, 10000)
+
+        synapse.dummy_output = nonce
+
+        start_time = now = time.time()
+
+        while ((now - start_time) < synapse.timeout_seconds):
+            hashed_number = hash256_of_int(nonce + synapse.dummy_input)
+
+            if is_correct_hash(hashed_number, synapse.difficulty):
+                break
+
+            nonce += 1
+            synapse.dummy_output = nonce
+
+            now = time.time()
+
         return synapse
 
     async def blacklist(

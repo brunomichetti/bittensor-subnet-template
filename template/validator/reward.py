@@ -19,6 +19,10 @@
 
 import torch
 from typing import List
+import bittensor as bt
+
+from template.utils.hash256 import is_correct_hash, hash256_of_int
+
 
 
 def reward(query: int, response: int) -> float:
@@ -29,9 +33,17 @@ def reward(query: int, response: int) -> float:
     Returns:
     - float: The reward value for the miner.
     """
+    from template.validator.forward import DIFFICULTY
+    bt.logging.info(f"Response: {response}")
 
-    return 1.0 if response == query * 2 else 0
+    if response is None:
+        return 0
 
+    hashed_number = hash256_of_int(query + response)
+
+    bt.logging.info(f"Hash: {hashed_number}")
+
+    return 1 if is_correct_hash(hashed_number, DIFFICULTY) else 0
 
 def get_rewards(
     self,

@@ -19,6 +19,7 @@
 
 import typing
 import bittensor as bt
+from typing import Optional, Tuple
 
 # TODO(developer): Rewrite with your protocol definition.
 
@@ -53,6 +54,9 @@ class Dummy(bt.Synapse):
 
     # Required request input, filled by sending dendrite caller.
     dummy_input: int
+    timeout_seconds: int
+    difficulty: int
+
 
     # Optional request output, filled by recieving axon.
     dummy_output: typing.Optional[int] = None
