@@ -25,7 +25,7 @@ from template.utils.uids import get_random_uids
 
 # The difficulty level. If the difficulty is N, then a correct hash
 # has to start at least with N zeros
-DIFFICULTY = 4
+DIFFICULTY = 6
 
 
 async def forward(self):
@@ -39,7 +39,6 @@ async def forward(self):
 
     """
     miner_uids = get_random_uids(self, k=self.config.neuron.sample_size)
-    
 
     # The dendrite client queries the network.
     responses = await self.dendrite(
@@ -48,7 +47,7 @@ async def forward(self):
         # Construct a dummy query.
         # For simplification, the data sent is the step.
         # The validator also sends the timeout time for the miner, and the difficulty level.
-        synapse=Dummy(dummy_input=self.step, timeout_seconds=1, difficulty=DIFFICULTY),
+        synapse=Dummy(dummy_input=self.step, timeout_seconds=10, difficulty=DIFFICULTY),
         # All responses have the deserialize function called on them before returning.
         # You are encouraged to define your own deserialization function.
         deserialize=True,

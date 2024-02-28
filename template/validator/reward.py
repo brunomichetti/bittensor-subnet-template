@@ -21,7 +21,20 @@ import torch
 from typing import List
 import bittensor as bt
 
-from template.utils.hash256 import is_correct_hash, hash256_of_int
+from template.utils.hash256 import hash256_of_int, initial_zeros_amount
+
+
+def score(hashed_number: str, difficulty: int) -> float:
+    """
+    Returns the score of a hashed_number according the defined difficulty.
+    The more zeros it has at the beginning, the higher the score.
+    """
+    if difficulty == 0:
+        return 1.0
+    
+    zeros_amount = initial_zeros_amount(hashed_number)
+    
+    return min(1.0, (zeros_amount/difficulty))
 
 
 
@@ -37,15 +50,13 @@ def reward(query: int, response: int) -> float:
     bt.logging.info(f"Response: {response}")
 
     if response is None:
-        return 0
+        return 0.0
 
-    # The validator checks that the received nonce combined with the sent data (step)
-    # has a hash that meets the defined conditions
     hashed_number = hash256_of_int(query + response)
 
     bt.logging.info(f"Hash: {hashed_number}")
 
-    return 1 if is_correct_hash(hashed_number, DIFFICULTY) else 0
+    return score(hashed_number, DIFFICULTY)
 
 def get_rewards(
     self,
