@@ -27,7 +27,7 @@ import template
 
 # import base miner class which takes care of most of the boilerplate
 from template.base.miner import BaseMinerNeuron
-from template.utils.hash256 import hash256_of_int, is_correct_hash
+from template.utils.hash256 import hash256_of_int, is_correct_hash, initial_zeros_amount
 
 
 
@@ -65,23 +65,33 @@ class Miner(BaseMinerNeuron):
         # Initially the nonce is a random number
         nonce = random.randint(0, 10000)
 
+        bt.logging.info(f"Initial NONCE: {nonce}")
+
+        hashed_number = hash256_of_int(nonce + synapse.dummy_input)
+        highest_current_zeros_amount = zeros_amount = initial_zeros_amount(hashed_number)
         synapse.dummy_output = nonce
 
         start_time = now = time.time()
 
         # While the time is not over, combine the nonce and the received data
         # to find a hash that meets the conditions according the received difficulty.
-        # If success, return the found nonce. If the time ran out, send the nonce encountered so far.
+        # If success, return the found nonce. If the time ran out, send the nonce encountered so far
+        # whit the highest amount of zeros at the beginning.
         while ((now - start_time) < synapse.timeout_seconds):
-            hashed_number = hash256_of_int(nonce + synapse.dummy_input)
-
             if is_correct_hash(hashed_number, synapse.difficulty):
+                synapse.dummy_output = nonce
                 break
 
-            nonce += 1
-            synapse.dummy_output = nonce
+            if zeros_amount > highest_current_zeros_amount:
+                highest_current_zeros_amount = zeros_amount
+                synapse.dummy_output = nonce
 
+            nonce += random.randint(1, 1000)
+            hashed_number = hash256_of_int(nonce + synapse.dummy_input)
+            zeros_amount = initial_zeros_amount(hashed_number)
             now = time.time()
+        
+        bt.logging.info(f"Time: {(now - start_time)}")
 
         return synapse
 
