@@ -1,0 +1,13 @@
+General approach:
+- The miners generate hashes for a nonce to meet a given condition. In this case the condition is to generate a hash for a nonce with a defined amount of zeros at the beginning. The defined amount of zeros is the level of difficulty.
+- The validator sends data (for simplification, in this case sends the step) and a defined timeout in seconds to the miners.
+- When a miner receives the data, tries to combine that data with a nonce, to generate a hash that meets the defined condition.
+- When the miner finds the hash, sends the nonce to the validator.
+- If the time runs out, the miner sends the hash with the highest amount of zeros found so far.
+- The validator receives the nonce from the miner and gives a score between 0 and 1. The more zeros it has at the beginning, the higher the score.
+Modified functions/classes/files:
+- forward function of the validator
+- reward function of the validator
+- forward function of the miner
+- Dummy synapse class to add the fields of the sent data
+- Added a utils file to manage hash functions
